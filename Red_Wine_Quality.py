@@ -12,6 +12,8 @@ from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.svm import SVR
 from sklearn.model_selection import GridSearchCV
+from scipy import stats
+from sklearn.impute import SimpleImputer
 
 ########## Load CSV data, display headings and check for NULL data ##########
 
@@ -69,98 +71,104 @@ for set_ in (strat_train_set, strat_test_set):
 red_data = strat_train_set.drop("quality", axis=1) # Makes a copy of the original data and drops quality (ie, creates predictors)
 red_data_labels = strat_train_set["quality"].copy() # Makes a copy and copies quality (ie, creates the labels)
 
+# Use imputer to fill in NULL values
+imputer = SimpleImputer(strategy="median")
+imputer.fit(red_data)
+
+print("Stats: ", imputer.statistics_)
+
 ########## Select a training model ##########
 ########## Linear Regression ##########
 # Apply linear regression to the predictors and labels
-lin_reg = LinearRegression()
-lin_reg.fit(red_data, red_data_labels)
+#lin_reg = LinearRegression()
+#lin_reg.fit(red_data, red_data_labels)
 
 # Run linear regression on some of the data
-some_data = red_data.iloc[:5]
-some_labels = red_data_labels.iloc[:5]
+#some_data = red_data.iloc[:5]
+#some_labels = red_data_labels.iloc[:5]
 
-print("""
+#print("""
 
-Lin_Reg Predictions:""", lin_reg.predict(some_data))
-print("Labels:", list(some_labels))
+#Lin_Reg Predictions:""", lin_reg.predict(some_data))
+#print("Labels:", list(some_labels))
 
 # Check the linear regression model on all of the data using Root Mean Square Error
-alcohol_predictions = lin_reg.predict(red_data)
-lin_mse = mean_squared_error(red_data_labels, alcohol_predictions)
-lin_rmse = np.sqrt(lin_mse)
-print("Lin_Reg RMSE: ", lin_rmse)
+#alcohol_predictions = lin_reg.predict(red_data)
+#lin_mse = mean_squared_error(red_data_labels, alcohol_predictions)
+#lin_rmse = np.sqrt(lin_mse)
+#print("Lin_Reg RMSE: ", lin_rmse)
 
 # Check the linear regression model on all of the data uing Mean Absolute Error
-lin_mae = mean_absolute_error(red_data_labels, alcohol_predictions)
-print("Lin_Reg MAE: ", lin_mae)
+#print("Lin_Reg MAE: ", lin_mae)
+#lin_mae = mean_absolute_error(red_data_labels, alcohol_predictions)
 
 # Use cross validation to further evaluate the model
-def display_scores(scores, model):
-    print(model, " Scores:", scores)
-    print(model, " Mean:", scores.mean())
-    print(model, " Standard deviation:", scores.std())
+#def display_scores(scores, model):
+#    print(model, " Scores:", scores)
+#    print(model, " Mean:", scores.mean())
+#    print(model, " Standard deviation:", scores.std())
 
-lin_scores = cross_val_score(lin_reg, red_data, red_data_labels,
-                             scoring="neg_mean_squared_error", cv=10)
-lin_rmse_scores = np.sqrt(-lin_scores)
-display_scores(lin_rmse_scores, "Lin_Reg")
+#lin_scores = cross_val_score(lin_reg, red_data, red_data_labels,
+#                             scoring="neg_mean_squared_error", cv=10)
+#lin_rmse_scores = np.sqrt(-lin_scores)
+#display_scores(lin_rmse_scores, "Lin_Reg")
 
 ########## Decision Tree Regressor ##########
 # Apply decision tree regressor to the predictors and labels
-tree_reg = DecisionTreeRegressor(random_state=42)
-tree_reg.fit(red_data, red_data_labels)
+#tree_reg = DecisionTreeRegressor(random_state=42)
+#tree_reg.fit(red_data, red_data_labels)
 
 # Run decision tree regressor on some of the data
-alcohol_predictions = tree_reg.predict(red_data)
-tree_mse = mean_squared_error(red_data_labels, alcohol_predictions)
-tree_rmse = np.sqrt(tree_mse)
-print("""
+#alcohol_predictions = tree_reg.predict(red_data)
+#tree_mse = mean_squared_error(red_data_labels, alcohol_predictions)
+#tree_rmse = np.sqrt(tree_mse)
+#print("""
 
-DTR RMSE""", tree_rmse)
+#DTR RMSE""", tree_rmse)
 
 # Use cross validation to further evaluate the model
-scores = cross_val_score(tree_reg, red_data, red_data_labels,
-                         scoring="neg_mean_squared_error", cv=10)
-tree_rmse_scores = np.sqrt(-scores)
-display_scores(tree_rmse_scores, "DTR")
+#scores = cross_val_score(tree_reg, red_data, red_data_labels,
+#                         scoring="neg_mean_squared_error", cv=10)
+#tree_rmse_scores = np.sqrt(-scores)
+#display_scores(tree_rmse_scores, "DTR")
 
 ########## Random Forest Regressor ##########
 # Apply random tree regressor to the predictors and labels
-forest_reg = RandomForestRegressor(n_estimators=180, random_state=42)
-forest_reg.fit(red_data, red_data_labels)
+#forest_reg = RandomForestRegressor(n_estimators=180, random_state=42)
+#forest_reg.fit(red_data, red_data_labels)
 
 # Run random forest regressor on some of the data
-alcohol_predictions = forest_reg.predict(red_data)
-forest_mse = mean_squared_error(red_data_labels, alcohol_predictions)
-forest_rmse = np.sqrt(forest_mse)
-print("""
+#alcohol_predictions = forest_reg.predict(red_data)
+#forest_mse = mean_squared_error(red_data_labels, alcohol_predictions)
+#forest_rmse = np.sqrt(forest_mse)
+#print("""
 
-RFR RMSE""", forest_rmse)
+#RFR RMSE""", forest_rmse)
 
 # Use cross validation to further evaluate the model
-scores = cross_val_score(forest_reg, red_data, red_data_labels,
-                         scoring="neg_mean_squared_error", cv=10)
-forest_rmse_scores = np.sqrt(-scores)
-display_scores(forest_rmse_scores, "RFR")
+#scores = cross_val_score(forest_reg, red_data, red_data_labels,
+#                         scoring="neg_mean_squared_error", cv=10)
+#forest_rmse_scores = np.sqrt(-scores)
+#display_scores(forest_rmse_scores, "RFR")
 
 ########## Support Vector Regression ##########
 # Apply Support Vector Regression to the predictors and labels
-svm_reg = SVR(kernel="linear")
-svm_reg.fit(red_data, red_data_labels)
+#svm_reg = SVR(kernel="linear")
+#svm_reg.fit(red_data, red_data_labels)
 
 # Run SVR on some of the data
-alcohol_predictions = svm_reg.predict(red_data)
-svm_mse = mean_squared_error(red_data_labels, alcohol_predictions)
-svm_rmse = np.sqrt(svm_mse)
-print("""
+#alcohol_predictions = svm_reg.predict(red_data)
+#svm_mse = mean_squared_error(red_data_labels, alcohol_predictions)
+#svm_rmse = np.sqrt(svm_mse)
+#print("""
 
-SVR RMSE""", svm_rmse)
+#SVR RMSE""", svm_rmse)
 
 # Use cross validation to further evaluate the model
-scores = cross_val_score(svm_reg, red_data, red_data_labels,
-                         scoring="neg_mean_squared_error", cv=10)
-svm_rmse_scores = np.sqrt(-scores)
-display_scores(svm_rmse_scores, "SVR")
+#scores = cross_val_score(svm_reg, red_data, red_data_labels,
+#                         scoring="neg_mean_squared_error", cv=10)
+#svm_rmse_scores = np.sqrt(-scores)
+#display_scores(svm_rmse_scores, "SVR")
 
 ########## Fine Tune Random Forest Regressor using GridSearch ##########
 param_grid = [
@@ -185,9 +193,10 @@ cvres = grid_search.cv_results_
 for mean_score, params in zip(cvres["mean_test_score"], cvres["params"]):
     print(np.sqrt(-mean_score), params)
 
-########## Evaluate system on the test set ##########
+########## FINAL MODEL ##########
 final_model = grid_search.best_estimator_
 
+########## Evaluate the final model on the test set ##########
 X_test = strat_test_set.drop("quality", axis=1)
 y_test = strat_test_set["quality"].copy()
 
@@ -200,11 +209,20 @@ print("""
 Final MSE: """, final_mse)
 print("Final RMSE: ", final_rmse)
 
+# Calculate the range of a result that has 95% confidence
+confidence = 0.95
+squared_errors = (final_predictions - y_test) ** 2
+print("95% Confidence Range: ", np.sqrt(stats.t.interval(confidence, len(squared_errors) - 1,
+                        loc=squared_errors.mean(),
+                        scale=stats.sem(squared_errors))))
 
+########## Use the final model to predict the quality ##########
+X_new = [[12.2, None, 0.2, 2.1, 0.081, 14.0, 58.0, 0.999, 3.2, 0.55, 12]] # A new set of data that is going to be used to predict the quality
+X_imputed = imputer.transform(X_new) # Transform the imputed value (median) into the new data with NULL(None) value
+print("X_imputed: ", X_imputed) # A check to make sure the imputed value was added to the new data
+X_new_prediction = final_model.predict(X_imputed) # Perform the prediction
+print("Prediction Quality = ", X_new_prediction ) # Print the prediction
 
-
-
-
-
-
-
+# End results are...
+# Random Forest Regressor with hyperparameters of (max_features=4, n_estimators=180, random_state=42)
+# This provides a final Root Mean Square Error of 0.579, where a 95% confidence range is (0.513 - 0.638)
