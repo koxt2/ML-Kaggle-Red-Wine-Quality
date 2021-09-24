@@ -1,3 +1,26 @@
+# My first machine learning project. The goal is to predict the quality of red wine.
+#
+# The model is trained using 80% of 1599 instances, and 11 metrics.
+# The model was trialled using linear regression, decision tree regressor, 
+# random tree regressor and support vector regressor methods. 
+# All methods were evaluated using cross validation and where applicable, grid search. 
+#
+# The final model is based on a Random Forest Regressor method with hyperparameters max_features=4, n_estimators=180, random_state=42
+# This provides a final Root Mean Square Error of 0.579, where a 95% confidence range is (0.513 - 0.638)
+# The hyperperameters were only roughly tuned.
+#
+# The data used is freely availble from https://archive.ics.uci.edu/ml/datasets/Wine+Quality
+#
+# Citation
+# P. Cortez, A. Cerdeira, F. Almeida, T. Matos and J. Reis. 
+# Modeling wine preferences by data mining from physicochemical properties.
+# In Decision Support Systems, Elsevier, 47(4):547-553. ISSN: 0167-9236.
+# 
+# Available at: [@Elsevier] http://dx.doi.org/10.1016/j.dss.2009.05.016
+#                [Pre-press (pdf)] http://www3.dsi.uminho.pt/pcortez/winequality09.pdf
+#                [bib] http://www3.dsi.uminho.pt/pcortez/dss09.bib
+
+
 import os
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -222,7 +245,3 @@ X_imputed = imputer.transform(X_new) # Transform the imputed value (median) into
 print("X_imputed: ", X_imputed) # A check to make sure the imputed value was added to the new data
 X_new_prediction = final_model.predict(X_imputed) # Perform the prediction
 print("Prediction Quality = ", X_new_prediction ) # Print the prediction
-
-# End results are...
-# Random Forest Regressor with hyperparameters of (max_features=4, n_estimators=180, random_state=42)
-# This provides a final Root Mean Square Error of 0.579, where a 95% confidence range is (0.513 - 0.638)
