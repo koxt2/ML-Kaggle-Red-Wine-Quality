@@ -37,6 +37,9 @@ from sklearn.svm import SVR
 from sklearn.model_selection import GridSearchCV
 from scipy import stats
 from sklearn.impute import SimpleImputer
+import time
+
+start_time = time.time()
 
 ########## Load CSV data, display headings and check for NULL data ##########
 
@@ -75,6 +78,10 @@ red_data["alcohol_cat"] = pd.cut(red_data["alcohol"],
                                bins=[8, 9, 10, 11, 12, 13, np.inf],
                                labels=[8, 9, 10, 11, 12, 13])
 print(red_data["alcohol_cat"].value_counts()) # Print the count in each category
+
+df = pd.DataFrame(red_data)
+check_for_nan = df['alcohol_cat'].isnull().values.any()
+print (check_for_nan)
 
 # Split from the dataset a stratified sample to use as a test set (20%)
 split = StratifiedShuffleSplit(n_splits=1, test_size=0.2, random_state=42)
@@ -240,8 +247,10 @@ print("95% Confidence Range: ", np.sqrt(stats.t.interval(confidence, len(squared
                         scale=stats.sem(squared_errors))))
 
 ########## Use the final model to predict the quality ##########
-X_new = [[12.2, None, 0.2, 2.1, 0.081, 14.0, 58.0, 0.999, 3.2, 0.55, 12]] # A new set of data that is going to be used to predict the quality
+X_new = [[11.2, 0.28, 0.56, 1.9, 0.075, 17.0, 60.0, 0.998, 3.16, 0.58, 9.8]] # A new set of data that is going to be used to predict the quality
 X_imputed = imputer.transform(X_new) # Transform the imputed value (median) into the new data with NULL(None) value
 print("X_imputed: ", X_imputed) # A check to make sure the imputed value was added to the new data
 X_new_prediction = final_model.predict(X_imputed) # Perform the prediction
 print("Prediction Quality = ", X_new_prediction ) # Print the prediction
+
+print ("My program took", time.time() - start_time, "to run")
