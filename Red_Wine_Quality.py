@@ -20,9 +20,11 @@
 #                [Pre-press (pdf)] http://www3.dsi.uminho.pt/pcortez/winequality09.pdf
 #                [bib] http://www3.dsi.uminho.pt/pcortez/dss09.bib
 
-
+########## The .csv needs to be opened in Calc and saved as .csv. Something is wrong with the source .csv ########## 
 import os
+import urllib.request
 import pandas as pd
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.model_selection import StratifiedShuffleSplit
@@ -39,24 +41,74 @@ from scipy import stats
 from sklearn.impute import SimpleImputer
 import time
 
+########## Setup ##########
 start_time = time.time()
 
-########## Load CSV data, display headings and check for NULL data ##########
+PROJECT_ROOT_DIR = ""
+IMAGES_PATH = os.path.join(PROJECT_ROOT_DIR, "images")
+DATASET_PATH = os.path.join(PROJECT_ROOT_DIR, "data")
 
-# Load CSV data
-def load_red_data():
-    return pd.read_csv('/Users/richard/Documents/Python/Machine-Learning/Red-Wine-Quality/red.csv')
-red_data = load_red_data()
+DOWNLOAD_ADDRESS = "https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/"
+DOWNLOAD_FILENAME = "winequality-red.csv"
+DATA_FILENAME = "winequality-red.csv"
+
+# Where to save the figures 
+def save_fig(fig_id, tight_layout=True, fig_extension="png", resolution=300, images_path=IMAGES_PATH):
+    if not os.path.isdir(images_path):
+        os.makedirs(images_path)
+    path = os.path.join(IMAGES_PATH, fig_id + "." + fig_extension)
+    print("Saving figure", fig_id)
+    if tight_layout:
+        plt.tight_layout()
+    plt.savefig(path, format=fig_extension, dpi=resolution)
+
+# To plot figures 
+mpl.rc('axes', labelsize=14)
+mpl.rc('xtick', labelsize=12)
+mpl.rc('ytick', labelsize=12)
+
+
+########## Download the data ##########
+def fetch_data(data_url=DOWNLOAD_ADDRESS + DOWNLOAD_FILENAME, dataset_path=DATASET_PATH):
+    if not os.path.isdir(dataset_path):
+        os.makedirs(dataset_path)
+    # extract the tarball
+    data_path = os.path.join(dataset_path, DOWNLOAD_FILENAME)
+    urllib.request.urlretrieve(data_url, data_path)
+    #data_tgz = tarfile.open(data_path)
+    #data_tgz.extractall(path=dataset_path)
+    #data_tgz.close()
+
+#fetch_data()
+
+########## Load the data ##########
+def load_data(dataset_path=DATASET_PATH, data_filename=DATA_FILENAME):
+    csv_path = os.path.join(dataset_path, data_filename)
+    return pd.read_csv(csv_path)
+
+red_data = load_data()
 
 # Print CSV data and summary
-print(red_data.head())
-print(red_data.info())
-print(red_data.describe())
+print("""
+
+
+Data labels and first 5 rows
+""", red_data.head()) 
+print("""
+
+
+Summary of the number of instances of data and the data type
+""",red_data.info()) # 
+print("""
+
+
+Averages of each attribute
+""",red_data.describe())
 
 # Plot histograms
-def save_fig(fig_id, tight_layout=True, fig_extension="png", resolution=200):
-    path = os.path.join('/Users/richard/Documents/Python/Machine-Learning/Red-Wine-Quality/', fig_id + "." + fig_extension)
-    plt.savefig(path, format=fig_extension, dpi=resolution)
+#def save_fig(fig_id, tight_layout=True, fig_extension="png", resolution=200):
+#    path = os.path.join('/Users/richard/Documents/Python/Machine-Learning/Red-Wine-Quality/', fig_id + "." + fig_extension)
+#    plt.savefig(path, format=fig_extension, dpi=resolution)
 
 red_data.hist(bins=50, figsize=(15,10))
 save_fig("attribute_histogram_plots")
@@ -64,8 +116,8 @@ save_fig("attribute_histogram_plots")
 ########## Create a test set ##########
 # Find which attribute correlates the strongest with quality ( Result: alcohol content)
 correlations = red_data.corr()
-correlations["quality"].sort_values(ascending=False) 
-print(correlations)
+print(correlations["quality"].sort_values(ascending=False))
+
 
 # Plot a series of scatter diagrams of other atrributes that show relatively strong correlation
 attributes = ["quality", "alcohol", "sulphates",
